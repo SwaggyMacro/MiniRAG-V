@@ -1,0 +1,86 @@
+# Milvus Database Configuration
+# VLM + 多模态 RAG 系统配置文件
+
+milvus:
+  # 连接配置
+  host: localhost
+  port: 19530
+  
+  # 重试配置
+  retry_attempts: 3
+  retry_delay: 1.0  # 秒
+  
+  # HNSW 索引参数
+  index:
+    hnsw_m: 16              # 每层最大连接数
+    hnsw_ef_construction: 256  # 构建时搜索范围
+    hnsw_ef_search: 64      # 搜索时搜索范围
+  
+  # Collection 名称
+  collections:
+    image: camera_case_images      # 图像案例库
+    kb: security_kb_chunks         # 文本知识库
+
+# Embedding 配置（Chinese-CLIP）
+embedding:
+  dim: 512                         # 向量维度（Chinese-CLIP 输出）
+  model_name: ViT-B-16             # Chinese-CLIP 模型名称
+  version: "2.0"                   # 版本升级标记
+  model_path: model/vision_model/chinese-clip-vit-base-patch16  # Chinese-CLIP 模型路径
+  
+  # 扩展配置
+  device: auto                     # auto/cuda/cpu，auto 时自动检测
+  batch_size: 32                   # 批处理大小
+  max_text_length: 52              # Chinese-CLIP 最大文本长度（tokens）
+
+# 检索配置
+retrieval:
+  # 图像检索配置
+  image:
+    top_k: 5                       # 返回结果数量
+    score_threshold: 0.6           # 低于此分数标记为 low_confidence
+    dedup_window_sec: 5            # 去重时间窗口（秒）
+    recall_n: 50                   # 召回数量（去重前）
+  
+  # 知识库检索配置
+  kb:
+    top_k: 5                       # 返回结果数量
+    score_threshold: 0.5           # 低于此分数标记为 low_confidence
+  
+  # 置信度分桶阈值
+  confidence:
+    high: 0.8                      # >= 0.8 为 high
+    medium: 0.6                    # >= 0.6 为 medium
+                                   # < 0.6 为 low
+  
+  # Evidence Pack 截断配置
+  truncation:
+    max_case_desc: 120             # root_cause/resolution_action 最大字符数
+    max_chunk_text: 150            # chunk_text 最大字符数（适配 CLIP 77 tokens）
+
+# VLM 解释模块配置
+vlm:
+  # 模型路径配置
+  model_path: model/MiniMind2-V                                 # VLM 模型目录（包含 tokenizer 和权重文件）
+  vision_model_path: model/vision_model/chinese-clip-vit-base-patch16  # 视觉编码器路径
+  
+  # 设备与精度配置
+  device: auto                     # auto/cuda/cpu，auto 时自动检测
+  torch_dtype: float32             # float32（MiniMind-V 需要与 CLIP 精度一致）
+  
+  # 生成参数
+  generation:
+    max_new_tokens: 100            # 最大生成 token 数
+    temperature: 0.7               # 采样温度
+    top_p: 0.9                     # nucleus 采样参数
+    do_sample: true                # 是否采样
+    repetition_penalty: 1.1        # 重复惩罚
+  
+  # Prompt 配置
+  prompt:
+    system: |
+      你是一个图像分析助手。请简洁描述图片中的可见内容，不要推测原因，不要给建议。
+    max_cases: 3                   # 最大案例数量
+    max_kb_chunks: 3               # 最大知识库片段数量
+    max_case_desc_length: 80       # 案例描述最大长度
+    max_chunk_text_length: 100     # 知识库文本最大长度
