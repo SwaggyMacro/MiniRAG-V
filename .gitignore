@@ -1,0 +1,38 @@
+# Python-generated files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# IDE & Tools
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Project Specific - Large Files & Data
+# Large model weights (too large for git)
+model/
+
+# Datasets
+dataset/
+
+# Logs
+*.log
+logs/
+
+# Operating System
+.DS_Store
+Thumbs.db
