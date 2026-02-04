@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # MiniRAG-V
 =======
 # 多模态 VLM + RAG 安全分析系统
@@ -122,4 +121,3 @@ my_project/
 ├── dataset/             # 数据目录
 └── tests/               # 单元测试
 ```
->>>>>>> dev
